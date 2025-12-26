@@ -4,19 +4,24 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.mongodb.MongoDatabaseFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.SimpleMongoClientDatabaseFactory;
 
 @Configuration
 public class MongoConfig {
-    private static final String MONGO_URI = "mongodb+srv://phuclnoucamp5002942_db_user:UCo7c3REhcJEzhCh@tingting.sspibcu.mongodb.net/TingTing?retryWrites=true&w=majority";
+    private static final String MONGO_URI = "mongodb+srv://phuclnoucamp5002942_db_user:5fAqAKfoJdcIXHe4@tingting.sspibcu.mongodb.net/TingTing?retryWrites=true&w=majority";
 
     @Bean
     public MongoClient mongoClient() {
         return MongoClients.create(MONGO_URI);
     }
-
     @Bean
-    public MongoTemplate mongoTemplate() {
-        return new MongoTemplate(mongoClient(), "TingTing");
+    public MongoDatabaseFactory mongoDatabaseFactory(MongoClient mongoClient) {
+        return new SimpleMongoClientDatabaseFactory(mongoClient, "TingTing");
+    }
+    @Bean
+    public MongoTemplate mongoTemplate(MongoDatabaseFactory mongoDatabaseFactory) {
+        return new MongoTemplate(mongoDatabaseFactory);
     }
 }
