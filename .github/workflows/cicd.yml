@@ -26,11 +26,12 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build Docker image
-        run: docker build -t phucngo249/chatting-backend:latest .
-
-      - name: Push image to Docker Hub
-        run: docker push phucngo249/chatting-backend:latest
+      - name: Build and Push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: phucngo249/chatting-backend:latest
 
   deploy:
     needs: build
@@ -43,14 +44,16 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Pull image
+      - name: Pull new image
         run: docker pull phucngo249/chatting-backend:latest
 
-      - name: Stop old container
-        run: docker stop chatting-backend || true
-
-      - name: Remove old container
-        run: docker rm chatting-backend || true
+      - name: Stop and Remove old container
+        run: |
+          docker stop chatting-backend || true
+          docker rm chatting-backend || true
 
       - name: Run new container
         run: docker run -d -p 8080:8080 --name chatting-backend phucngo249/chatting-backend:latest
+
+      - name: Cleanup dangling images
+        run: docker image prune -f
