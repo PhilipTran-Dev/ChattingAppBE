@@ -57,3 +57,7 @@ jobs:
 
       - name: Cleanup dangling images
         run: docker image prune -f
+
+      - name: Ensure port 8080 is free
+        run: |
+          sudo lsof -t -i:8080 | xargs -r sudo kill -9
